@@ -349,7 +349,7 @@ export default defineConfig({
 
       if (errorCode) {
         errorFreeCode = await axios.post(
-          "https://weblyai.vercel.app/api/errorcorrection",
+          "https://weblyss.onrender.com/api/errorcorrection",
           {
             code: codeResponse,
             error: errorCode,
@@ -424,7 +424,7 @@ export default defineConfig({
     try {
       const dependencies = localStorage.getItem("dependencies");
       const response = await axios.get(
-        "https://weblyai.vercel.app/api/get-command",
+        "https://weblyss.onrender.com/api/get-command",
         { dependencies }
       );
       const {
