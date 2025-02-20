@@ -11,7 +11,7 @@ export default defineConfig({
       "Cross-Origin-Embedder-Policy": "require-corp",
     },
     proxy: {
-      "/api": "https://weblyss.onrender.com",
+      "/api": "https://weblyai.vercel.app",
     },
   },
 });
