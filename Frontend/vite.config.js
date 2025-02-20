@@ -22,5 +22,8 @@ export default defineConfig(({ command }) => {
         "/api": "https://weblyss.onrender.com",
       },
     },
+    build: {
+      target: "esnext", // Ensures compatibility with modern browsers
+    },
   };
 });
