@@ -9,7 +9,17 @@ import TestPrompt from "./src/TestPrompt.js";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://weblyss.vercel.app",
+      "https://weblyss.vercel.app/websitegenerator",
+    ], // Allow only your frontend domain
+    credentials: true, // Allow sending cookies/auth headers
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
 
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
