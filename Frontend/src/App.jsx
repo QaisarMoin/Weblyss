@@ -322,10 +322,13 @@ export default defineConfig({
       console.log("code is getting error free");
 
       if (errorCode) {
-        errorFreeCode = await axios.post("/api/errorcorrection", {
-          code: codeResponse,
-          error: errorCode,
-        });
+        errorFreeCode = await axios.post(
+          "https://weblyss.onrender.com/api/errorcorrection",
+          {
+            code: codeResponse,
+            error: errorCode,
+          }
+        );
 
         console.log("might be error free code is generated");
 
@@ -396,7 +399,10 @@ export default defineConfig({
   const fetchCommandAndRun = async (inputWriter, terminal) => {
     try {
       const dependencies = localStorage.getItem("dependencies");
-      const response = await axios.get("/api/get-command", { dependencies });
+      const response = await axios.get(
+        "https://weblyss.onrender.com/api/get-command",
+        { dependencies }
+      );
       const {
         command,
         secondCommand,

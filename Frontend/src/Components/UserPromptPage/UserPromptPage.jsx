@@ -27,10 +27,13 @@ const UserPromptPage = () => {
     console.log("svbjdhvjbfsdhhjsfdh");
     setToggle(!toggle);
     try {
-      const data = await axios.post("/api/get-user-prompt", {
-        userPrompt,
-        userId: localStorage.getItem("userId"),
-      });
+      const data = await axios.post(
+        "https://weblyss.onrender.com/api/get-user-prompt",
+        {
+          userPrompt,
+          userId: localStorage.getItem("userId"),
+        }
+      );
 
       console.log(JSON.parse(data.data.code.code));
       console.log(data.data.code.dependencies);
