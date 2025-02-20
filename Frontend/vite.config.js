@@ -7,10 +7,13 @@ import fs from "fs";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    https: {
-      key: fs.readFileSync("localhost-key.pem"),
-      cert: fs.readFileSync("localhost-cert.pem"),
-    },
+    https:
+      command === "serve"
+        ? {
+            key: fs.readFileSync("localhost-key.pem"),
+            cert: fs.readFileSync("localhost-cert.pem"),
+          }
+        : false,
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin",
       "Cross-Origin-Embedder-Policy": "require-corp",
