@@ -20,18 +20,18 @@ function App() {
 
   axios.defaults.withCredentials = true;
 
-  // useEffect(() => {
-  //   const lastReload = localStorage.getItem("lastReload");
-  //   const currentTime = Date.now();
+  useEffect(() => {
+    const lastReload = localStorage.getItem("lastReload");
+    const currentTime = Date.now();
 
-  //   if (!lastReload) {
-  //     localStorage.setItem("lastReload", currentTime);
-  //   } else if (currentTime - lastReload > 5000) {
-  //     // 5 seconds threshold
-  //     localStorage.setItem("lastReload", currentTime);
-  //     window.location.reload();
-  //   }
-  // }, []);
+    if (!lastReload) {
+      localStorage.setItem("lastReload", currentTime);
+    } else if (currentTime - lastReload > 5000) {
+      // 5 seconds threshold
+      localStorage.setItem("lastReload", currentTime);
+      window.location.reload();
+    }
+  }, []);
 
   const indexHtml = {
     "index.html": {
@@ -133,6 +133,50 @@ export default defineConfig({
         `,
       },
     },
+    "eslint.config.js": {
+      file: {
+        contents: `
+        import js from '@eslint/js'
+        import globals from 'globals'
+        import react from 'eslint-plugin-react'
+        import reactHooks from 'eslint-plugin-react-hooks'
+        import reactRefresh from 'eslint-plugin-react-refresh'
+
+        export default [
+          { ignores: ['dist'] },
+          {
+            files: ['**/*.{js,jsx}'],
+            languageOptions: {
+              ecmaVersion: 2020,
+              globals: globals.browser,
+              parserOptions: {
+                ecmaVersion: 'latest',
+                ecmaFeatures: { jsx: true },
+                sourceType: 'module',
+              },
+            },
+            settings: { react: { version: '18.3' } },
+            plugins: {
+              react,
+              'react-hooks': reactHooks,
+              'react-refresh': reactRefresh,
+            },
+            rules: {
+              ...js.configs.recommended.rules,
+              ...react.configs.recommended.rules,
+              ...react.configs['jsx-runtime'].rules,
+              ...reactHooks.configs.recommended.rules,
+              'react/jsx-no-target-blank': 'off',
+              'react-refresh/only-export-components': [
+                'warn',
+                { allowConstantExport: true },
+              ],
+            },
+          },
+        ]
+`,
+      },
+    },
   };
 
   async function runViteBuild(webContainer) {
@@ -202,9 +246,12 @@ export default defineConfig({
         return;
       }
 
-      // console.log(rawOutput);
+      console.log(rawOutput);
 
+      const wwe = rawOutput;
+      console.log(wwe);
       const eslintErrors = JSON.parse(rawOutput);
+      console.log(eslintErrors);
 
       // console.log(eslintErrors);
 
@@ -255,12 +302,7 @@ export default defineConfig({
 
   const fetchCodeandRun = async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // 2-second delay
-      // const codeResponse = await axios.get("/api/getcode");
-      // const data = codeResponse.data.code;
-      // setCode("");
-      // console.log("New data dsbdfkvjbjhfdbdk", data);
-      // console.log("New new eewweww", codeResponse);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const data = localStorage.getItem("code");
 
@@ -292,10 +334,6 @@ export default defineConfig({
         setCode(mergedCode);
         setValue(1);
         console.log("Code updated successfully.");
-        // const wawa = async () => {
-        //   await fetchCommandAndRun(inputWriterRef.current, terminalRef.current);
-        // };
-        // wawa();
       } else {
         throw new Error("No data received");
       }
@@ -314,8 +352,8 @@ export default defineConfig({
       }
       setCount(count + 1);
 
-      const codeResponse = JSON.parse(localStorage.getItem("code"));
-      // const fetchData = await codeResponse.data.code;
+      const codeResponse = localStorage.getItem("code");
+      const dependencies = localStorage.getItem("dependencies");
 
       let errorFreeCode;
 
@@ -327,6 +365,7 @@ export default defineConfig({
           {
             code: codeResponse,
             error: errorCode,
+            dependencies: dependencies,
           }
         );
 
@@ -347,7 +386,7 @@ export default defineConfig({
 
           console.log("error free code setting up in localStorage");
 
-          localStorage.setItem("code", JSON.stringify(parseData));
+          localStorage.setItem("code", parseData);
 
           const fixedCode = localStorage.getItem("code");
 
@@ -374,8 +413,6 @@ export default defineConfig({
     const fetchData = async () => {
       try {
         await fetchCodeandRun();
-        // If needed, uncomment and use fetchCommandAndRun
-        // await fetchCommandAndRun(inputWriterRef.current, terminalRef.current);
       } catch (error) {
         console.error("Error in fetchCodeandRun:", error);
       }
@@ -383,18 +420,6 @@ export default defineConfig({
 
     fetchData();
   }, []); // Add dependencies if necessary
-
-  // Mount the code to WebContainer when it changes
-  // useEffect(() => {
-  //   if (webContainerRef.current && code) {
-  //     console.log("Mounting code to WebContainer:", code);
-  //     console.log("Qaisssssar Moin code -> ", code);
-  //   }
-  //   // const wawa = async () => {
-  //   //   await fetchCommandAndRun(inputWriterRef.current, terminalRef.current);
-  //   // };
-  //   // wawa();
-  // }, [code]);
 
   const fetchCommandAndRun = async (inputWriter, terminal) => {
     try {
@@ -488,23 +513,6 @@ export default defineConfig({
 
       await fetchCommandAndRun(inputWriter, terminal);
 
-      // const files = await webContainerRef.current.fs.readdir("/");
-      // console.log("wwee", files[4]);
-
-      // if (files.includes("package.json")) {
-      //   const data = await webContainerRef.current.fs.readFile(
-      //     "/package.json",
-      //     "utf-8"
-      //   );
-      //   const data1 = await webContainerRef.current.fs.readFile(
-      //     "/package.json"
-      //   );
-      //   console.log("File content:", data);
-      //   console.log("File content:", data1);
-      // } else {
-      //   console.error("❌ package.json not found!");
-      // }
-
       await webContainer.fs.writeFile(
         "./eslint.config.js",
         `
@@ -571,8 +579,8 @@ export default defineConfig({
         </div>
         <div
           ref={terminalRef}
-          className="outputPanel lg:h-[250px] h-[150px] pr-5 pl-2 w-full flex flex-col-reverse
-          order-2 border-[#2f2f36] rounded-xl overflow-y-scroll"
+          className="outputPanel lg:h-[250px] h-[150px] pl-3 pr-16 text-wrap w-full flex flex-col-reverse
+          order-2 border-[#fff] rounded-xl overflow-y-scroll"
         />
       </section>
 
@@ -586,8 +594,10 @@ export default defineConfig({
           <div className="w-full h-full flex flex-col justify-center items-center  gap-10">
             <div class="flipping-new"></div>
             <p className=" text-center text-2xl">
-              Setting up environment—installing dependencies. <br /> Please
-              wait...
+              Setting up environment—
+              <span className="text-[#e33cef]">installing</span>{" "}
+              <span className="text-[#4cafff]">dependencies</span>. <br />{" "}
+              Please wait...
             </p>
 
             {errors ? errors : ""}

@@ -6,7 +6,7 @@ export default function codeGenerationPrompt(
   Task:
   **"First, analyze and generate the necessary dependencies. Use only these dependencies to build the ${userInput} website—do not include or import any other libraries or dependencies that are not listed in dependeccies->${dependencies}.
 
-Now, create a fully functional ${userInput} website using only the given dependencies: ${dependencies}. Ensure the website has a modern UI/UX, clean architecture, and a moderate level of functionality while strictly adhering to the provided dependencies."**
+Now, create a fully functional ${userInput} website using only the given dependencies: ${dependencies}. Ensure the website has a modern UI/UX, clean architecture, and a high level of functionality while strictly adhering to the provided dependencies."**
 
 **Strictly always make website with background color white like different shades of white  **
 **Strictly Do not make website with background color black  **

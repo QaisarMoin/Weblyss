@@ -11,7 +11,6 @@ export default defineConfig({
       "Cross-Origin-Embedder-Policy": "require-corp",
     },
     proxy: {
-      // "/api": "http://localhost:3001",
       "/api": "https://weblyss.onrender.com",
     },
   },

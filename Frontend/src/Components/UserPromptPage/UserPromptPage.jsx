@@ -12,6 +12,7 @@ const UserPromptPage = () => {
   const id = nanoid(10);
   const [toggle, setToggle] = useState(false);
   const [usersData, setUsersData] = useState({});
+  const [message, setMessage] = useState("");
 
   // Setting Up user ID
   useEffect(() => {
@@ -24,7 +25,7 @@ const UserPromptPage = () => {
   // handelling the button event
   const HandleSubmit = async (e) => {
     e.preventDefault();
-    console.log("svbjdhvjbfsdhhjsfdh");
+    setMessage("Please hold on while we generate your code.");
     setToggle(!toggle);
     try {
       const data = await axios.post(
@@ -40,9 +41,8 @@ const UserPromptPage = () => {
 
       setUsersData(data.data.code);
       navigate("/websitegenerator");
-
-      return <p className="text-4xl text-white">Hello world</p>;
     } catch (error) {
+      setMessage("Server is busy. Please try again.");
       console.log(
         "Error in handleSubmit while submitting the users Prompt ",
         error.message
@@ -80,7 +80,7 @@ const UserPromptPage = () => {
           <div className="absolute  flex justify-center items-center h-full w-full bg-black/60 z-50 flex-col gap-15">
             <div className="flipping1 sticky bottom-28 "></div>
             <p className="font-[font9] font-bold text-2xl bg-black/50 ">
-              Please hold on while we generate your code.
+              {message}
             </p>
           </div>
         ) : (

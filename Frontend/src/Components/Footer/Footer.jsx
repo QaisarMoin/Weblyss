@@ -6,6 +6,7 @@ import {
   FaSquareGithub,
 } from "react-icons/fa6";
 import "../Home/Home.css";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -28,22 +29,34 @@ const Footer = () => {
 
       {/* Connect */}
       <p className=" flex gap-4 md:flex-nowrap flex-wrap justify-evenly items-center font-[font9] mt-5 md:text-xl font-bold ">
-        <p className="flex gap-2 justify-center items-center bgAlter ">
+        <Link
+          to="https://www.linkedin.com/in/qaisar-moin-884918253/"
+          className="flex gap-2 justify-center items-center bgAlter "
+        >
           <FaLinkedin className="md:text-2xl " />
           Linkedin
-        </p>
-        <p className="flex gap-2 justify-center items-center bgAlter">
+        </Link>
+        <Link
+          to="https://github.com/QaisarMoin"
+          className="flex gap-2 justify-center items-center bgAlter"
+        >
           <FaSquareGithub className="md:text-2xl" />
           Github
-        </p>
-        <p className="flex gap-2 justify-center items-center bgAlter">
+        </Link>
+        <Link
+          to="https://x.com/_qaisarmoin"
+          className="flex gap-2 justify-center items-center bgAlter"
+        >
           <FaXTwitter className="md:text-2xl" />
           X.com
-        </p>
-        <p className="flex gap-2 justify-center items-center bgAlter">
+        </Link>
+        <Link
+          to="https://www.instagram.com/qaisarmoin_/"
+          className="flex gap-2 justify-center items-center bgAlter"
+        >
           {" "}
           <FaSquareInstagram className="md:text-2xl" /> Instagram
-        </p>
+        </Link>
       </p>
     </div>
   );

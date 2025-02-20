@@ -5,7 +5,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import codeGenerationPrompt from "./src/codeGenerationPrompt.js";
 import depGenerationPrompt from "./src/depGenerationPrompt.js";
 import codeErrorreductionPrompt from "./src/codeErrorreductionPrompt.js";
-import TestPrompt from "./src/TestPrompt.js";
+import codeFixPrompt from "./src/codeFixPrompt.js";
+import { ESLint } from "eslint";
 
 const app = express();
 
@@ -51,6 +52,13 @@ let currentCleanedCode = "";
 let currentCommand = "echo 'No command set'";
 let userData = {};
 
+// ------------------> Eslint Configuration ------------------>
+async function lintCode(code) {
+  const eslint = new ESLint({ fix: true });
+  const results = await eslint.lintText(code);
+  return results[0].output || code; // Return fixed code or original
+}
+
 // ------------------> Gemini Configuration ------------------ //
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -78,9 +86,12 @@ app.post("/api/get-user-prompt", async (req, res) => {
     const depGenerationPromptResult = await model.generateContent(
       depGenerationPromptText
     );
-    const currentDependencies = await depGenerationPromptResult.response.text();
+    const currentDependenciesRaw =
+      await depGenerationPromptResult.response.text();
 
-    console.log(currentDependencies);
+    console.log(currentDependenciesRaw);
+
+    const currentDependencies = await lintCode(currentDependenciesRaw);
 
     const codeGenerationPromptText = codeGenerationPrompt(
       userPrompt,
@@ -103,7 +114,9 @@ app.post("/api/get-user-prompt", async (req, res) => {
       generationConfig: generation_config,
     });
 
-    const cleanedCode = await cleanJSONCode(errorFreeCode.response.text());
+    const cleanedRawCode = await cleanJSONCode(errorFreeCode.response.text());
+
+    const cleanedCode = await lintCode(cleanedRawCode);
 
     console.log(cleanedCode);
 
@@ -133,24 +146,12 @@ app.post("/api/get-user-prompt", async (req, res) => {
   }
 });
 
-// app.get("/api/getcode", async (req, res) => {
-
-//   const code = (await req.session.currentCleanedCode) || "";
-//   console.log("Sending Code:", code); // Log the code being sent
-//   if (!code) {
-//     console.error("No code found in session");
-//     return res.status(400).json({ error: "No code generated yet" });
-//   }
-//   res.json({ code });
-// });
-
 app.get("/api/get-command", async (req, res) => {
   const { dependencies } = req.body;
 
   res.json({
     command: `npm install vite react@18 react-dom@18 @vitejs/plugin-react postcss@^8.4.35 tailwindcss@^3.4.1 --save-dev autoprefixer eslint react-router-dom react-icons ${dependencies} `,
-    // dependecyCommand: `npm i ${await req.session.currentDependencies} `,
-    secondCommand: `npm install eslint-plugin-import eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh globals@^15.0.0  --save-dev `,
+    secondCommand: `npm install eslint-plugin-import eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh globals@^15.0.0 --save-dev`,
     thirdCommand: `npm pkg set type=module`,
     fourthCommand: `npx eslint src/**/*.{js,jsx} --format json`,
     fifthCommand: `npx vite build --emptyOutDir`,
@@ -167,47 +168,18 @@ function cleanJSONCode(inputCode) {
     .trim();
 }
 
-const takeInput = async (error, code) => {
+const takeInput = async (error, code, dependencies) => {
   try {
-    const errorFreeCode = await model.generateContent(
-      `Strictly follow these instructions to fix the error and return the entire corrected code:
+    const codeFixPrompts = codeFixPrompt(error, code, dependencies);
+    const someErrorFreeCode = await model.generateContent(codeFixPrompts);
 
-      Error Handling & Fixing:
-      
-      If the error contains "Rollup failed to resolve import", apply the following fixes:
-      Ensure the module is correctly imported using the exact package name.
-      If it’s an external package (e.g., "react-router-dom"), ensure it is installed in "package.json". If missing, add it and correct any incorrect paths.
-      If it’s a local file, verify and correct the import path to match the actual file location.
-      If needed, check Vite configuration ("vite.config.js") to ensure proper resolution settings.
-      If the issue persists, consider adding it to "build.rollupOptions.external" if externalization is required.
-      Fix only the given error, ensuring that no such error remains after the fix.
-      Code Correction Requirements:
-      
-      Modify the code only as needed to completely resolve the issue.
-      Do not change the structure, formatting, or style of the code.
-      If other related issues are detected, fix them too, but do not alter the structure unnecessarily.
-      Strictly ensure that you return the entire corrected code, not just the fixed part.
-      Response Format:
-      
-      Do not add explanations, comments, or extra content.
-      Only return the corrected code while maintaining its original structure.
-      Error Message Format:
-      
-      js
-      Copy
-      Edit
-      This is the error -> ${error || ""}  
-      This is the code -> ${code || ""}
-      Strictly ensure that the entire corrected code is provided after fixing the error.      
-
-      `
-    );
+    const errorFreeCode = cleanJSONCode(someErrorFreeCode.response.text());
 
     const secondVerification = await model.generateContent(
-      codeErrorreductionPrompt(code, error)
+      codeErrorreductionPrompt(errorFreeCode, error)
     );
 
-    return cleanJSONCode(errorFreeCode.response.text());
+    return cleanJSONCode(secondVerification.response.text());
   } catch (err) {
     console.error("Error generating content:", err);
     return "";
@@ -216,9 +188,9 @@ const takeInput = async (error, code) => {
 
 app.post("/api/errorcorrection", async (req, res) => {
   try {
-    const { code, error } = req.body;
+    const { code, error, dependencies } = req.body;
     if (code && error) {
-      const errorFreeCode = await takeInput(error, code);
+      const errorFreeCode = await takeInput(error, code, dependencies);
       const clearedCode = cleanJSONCode(errorFreeCode);
       return res.json({ cleancode: clearedCode || "" });
     }

@@ -1,6 +1,5 @@
 import left from "../../assets/images/left.png";
 import React, { useRef } from "react";
-import ChildComponent from "./Button.jsx";
 import "../Home/Home.css";
 import { useNavigate } from "react-router-dom";
 

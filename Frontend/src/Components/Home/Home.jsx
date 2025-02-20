@@ -1,6 +1,5 @@
 import React from "react";
 import left from "../../assets/images/left.png";
-import royalty from "../../assets/images/royalty.png";
 import arrow from "../../assets/images/arrow.png";
 import "./Home.css";
 
