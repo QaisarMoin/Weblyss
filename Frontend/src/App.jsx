@@ -11,12 +11,9 @@ function App() {
   const terminalRef = useRef(null); // Reference to the terminal container in the DOM
   const webContainerRef = useRef(null); // Reference to the WebContainer instance
   const inputWriterRef = useRef(null); // Reference to the shell's input writer
-  let codeRef = useRef(null); // Reference to the code input field
   const [code, setCode] = useState(null); // State to hold the code to be executed
-  const [count, setCount] = useState(0);
   const editor = useRef(null);
   const [errors, setErrors] = useState("");
-  const [value, setValue] = useState(0);
 
   axios.defaults.withCredentials = true;
 
@@ -212,7 +209,7 @@ export default defineConfig({
       if (errorLog !== "") {
         console.error("Vite Build Errors:\n", errorLog);
         fetchCodeForErrorCorrection(errorLog);
-        console.log("Qaisar " + errorLog);
+        console.log(errorLog);
       } else {
         console.log("Vite build completed successfully.");
       }
@@ -248,12 +245,9 @@ export default defineConfig({
 
       console.log(rawOutput);
 
-      const wwe = rawOutput;
-      console.log(wwe);
       const eslintErrors = JSON.parse(rawOutput);
       console.log(eslintErrors);
 
-      // console.log(eslintErrors);
 
       eslintErrors.forEach((file) => {
         file.messages.forEach((msg) => {
@@ -332,7 +326,6 @@ export default defineConfig({
         };
 
         setCode(mergedCode);
-        setValue(1);
         console.log("Code updated successfully.");
       } else {
         throw new Error("No data received");
@@ -372,7 +365,7 @@ export default defineConfig({
 
         if (data) {
           const parseData = data;
-          console.log(`New --> `, parseData);
+          // console.log( parseData);
 
           if (!parseData) {
             console.log("No data received in fetchCodeForErrorCorrection");
@@ -394,7 +387,7 @@ export default defineConfig({
           await webContainerRef.current.mount(mergedCode);
           runEslint(webContainerRef.current);
           runViteBuild(webContainerRef.current);
-          console.log("completed Mohd Qaisr Moin");
+
         }
 
         const lastReload = localStorage.getItem("lastReload");
@@ -425,7 +418,7 @@ export default defineConfig({
     };
 
     fetchData();
-  }, []); // Add dependencies if necessary
+  }, []); 
 
   const fetchCommandAndRun = async (inputWriter, terminal) => {
     try {
@@ -572,7 +565,7 @@ export default defineConfig({
 
     boot();
   }, [code]);
-  // Depend on `code`
+
 
   return (
     <div

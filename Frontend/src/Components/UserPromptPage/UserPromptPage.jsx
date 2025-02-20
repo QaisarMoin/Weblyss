@@ -36,17 +36,14 @@ const UserPromptPage = () => {
         }
       );
 
-      console.log(JSON.parse(data.data.code.code));
-      console.log(data.data.code.dependencies);
+      // console.log(JSON.parse(data.data.code.code));
+      // console.log(data.data.code.dependencies);
 
       setUsersData(data.data.code);
       navigate("/websitegenerator");
     } catch (error) {
       setMessage("Server is busy. Please try again.");
-      console.log(
-        "Error in handleSubmit while submitting the users Prompt ",
-        error.message
-      );
+      console.log("Error in handleSubmit while submitting the users Prompt ");
     }
   };
 
@@ -193,9 +190,7 @@ const UserPromptPage = () => {
                 setUserPrompt(e.target.value);
               }}
               className=" rounded-xl outline-none p-4 h-full resize-none w-screen md:w-full "
-            >
-              {console.log(userPrompt)}
-            </textarea>
+            ></textarea>
             {toggle ? (
               <div class="flipping"></div>
             ) : (
