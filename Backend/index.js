@@ -9,29 +9,7 @@ import TestPrompt from "./src/TestPrompt.js";
 
 const app = express();
 
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       // Allow requests with no origin (e.g., mobile apps, Postman)
-//       if (!origin) return callback(null, true);
-
-//       // Explicitly allow specific origins (e.g., your frontend URL)
-//       const allowedOrigins = [
-//         " http://localhost:5174/", // Your frontend URL
-//         // Add more trusted origins here if needed
-//       ];
-
-//       // If the origin is in the allowed list, allow it
-//       if (allowedOrigins.includes(origin)) {
-//         return callback(null, true);
-//       }
-
-//       // Allow all other origins dynamically
-//       return callback(null, true); // This effectively acts as "*"
-//     },
-//     credentials: true, // Allow credentials (cookies, authorization headers)
-//   })
-// );
+app.use(cors());
 app.use(express.json());
 dotenv.config();
 
