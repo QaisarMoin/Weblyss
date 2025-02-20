@@ -347,11 +347,6 @@ export default defineConfig({
 
   const fetchCodeForErrorCorrection = async (errorCode = "") => {
     try {
-      if (count >= 5) {
-        return "Limit excedded";
-      }
-      setCount(count + 1);
-
       const codeResponse = localStorage.getItem("code");
       const dependencies = localStorage.getItem("dependencies");
 
@@ -400,6 +395,17 @@ export default defineConfig({
           runEslint(webContainerRef.current);
           runViteBuild(webContainerRef.current);
           console.log("completed Mohd Qaisr Moin");
+        }
+
+        const lastReload = localStorage.getItem("lastReload");
+        const currentTime = Date.now();
+
+        if (!lastReload) {
+          localStorage.setItem("lastReload", currentTime);
+        } else if (currentTime - lastReload > 5000) {
+          // 5 seconds threshold
+          localStorage.setItem("lastReload", currentTime);
+          window.location.reload();
         }
       }
     } catch (error) {

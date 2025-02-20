@@ -150,7 +150,7 @@ app.get("/api/get-command", async (req, res) => {
   const { dependencies } = req.body;
 
   res.json({
-    command: `npm install vite react@18 react-dom@18 @vitejs/plugin-react postcss@^8.4.35 tailwindcss@^3.4.1 --save-dev autoprefixer eslint react-router-dom react-icons ${dependencies} `,
+    command: `npm install vite react@18 react-dom@18 @vitejs/plugin-react postcss@^8.4.35 tailwindcss@^3.4.1 --save-dev autoprefixer eslint react-router-dom react-icons globals@^15.0.0 ${dependencies} `,
     secondCommand: `npm install eslint-plugin-import eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh globals@^15.0.0 --save-dev`,
     thirdCommand: `npm pkg set type=module`,
     fourthCommand: `npx eslint src/**/*.{js,jsx} --format json`,
