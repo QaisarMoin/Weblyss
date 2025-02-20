@@ -29,7 +29,7 @@ const UserPromptPage = () => {
     setToggle(!toggle);
     try {
       const data = await axios.post(
-        "https://weblyss.onrender.com/api/get-user-prompt",
+        "https://weblyai.vercel.app/api/get-user-prompt",
         {
           userPrompt,
           userId: localStorage.getItem("userId"),
